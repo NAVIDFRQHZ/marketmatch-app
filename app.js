@@ -1,4 +1,3 @@
-// Import Firebase modules from CDN (this works on GitHub Pages)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -9,9 +8,9 @@ function log(msg) {
   if (el) el.textContent += msg + "\n";
 }
 
-// 🔹 Your actual Firebase config (already filled correctly)
+// 🔹 1. YOUR firebaseConfig (use the SAME one that is already working)
 const firebaseConfig = {
-  apiKey: "AIzaSyB1-RcRXGpeJVTWNj21mFnggYy1s_s_h4gE0",
+  apiKey: "AIzaSyB1-RcRXGpeJVTWNj21mFnggYy1s_h4gE0",
   authDomain: "marketmatch-app.firebaseapp.com",
   projectId: "marketmatch-app",
   storageBucket: "marketmatch-app.firebasestorage.app",
@@ -20,7 +19,7 @@ const firebaseConfig = {
   measurementId: "G-2RZPS8QLLM"
 };
 
-// Initialize Firebase + Firestore
+// 🔹 2. Initialize Firebase + Firestore
 let app, db;
 try {
   app = initializeApp(firebaseConfig);
@@ -30,29 +29,57 @@ try {
   log("Error initializing Firebase: " + e.message);
 }
 
-// Get button
-const btn = document.getElementById("test-button");
-log("Button element: " + (btn ? "FOUND" : "NOT FOUND"));
+// 🔹 3. Grab the form + inputs
+const form = document.getElementById("consultation-form");
+const budgetInput = document.getElementById("budget");
+const skillsInput = document.getElementById("skills");
+const interestsInput = document.getElementById("interests");
 
-// Add event listener
-if (btn && db) {
-  btn.addEventListener("click", async () => {
-    log("Button clicked – starting addDoc...");
+if (!form) {
+  log("Consultation form NOT FOUND");
+} else {
+  log("Consultation form FOUND");
+}
 
+// 🔹 4. Handle form submit
+if (form && db) {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault(); // stop page reload
+    log("Form submitted – preparing data...");
+
+    const budget = Number(budgetInput.value || 0);
+    const skills = (skillsInput.value || "")
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean);
+    const interests = (interestsInput.value || "")
+      .split(",")
+      .map(i => i.trim())
+      .filter(Boolean);
+
+    const consultationData = {
+      createdAt: new Date(),
+      status: "questions_completed",
+      answers: {
+        budget,
+        skills,
+        interests
+      }
+    };
+
+    log("Saving consultation to Firestore...");
     try {
-      const docRef = await addDoc(collection(db, "consultations"), {
-        createdAt: new Date(),
-        test: true,
-        note: "Hello from GitHub + Firebase!"
-      });
+      const docRef = await addDoc(collection(db, "consultations"), consultationData);
+      log("SUCCESS: Consultation saved with ID: " + docRef.id);
+      alert("Consultation saved! ID: " + docRef.id);
 
-      log("SUCCESS: Document written with ID: " + docRef.id);
-      alert("Created test consultation with ID: " + docRef.id);
+      // Optional: clear form
+      form.reset();
     } catch (error) {
-      log("ERROR adding document: " + error.message);
-      alert("ERROR writing to Firestore: " + error.message);
+      log("ERROR saving consultation: " + error.message);
+      alert("ERROR saving consultation: " + error.message);
     }
   });
 } else {
-  log("Either button or db missing – cannot attach click handler.");
+  log("Either form or db missing – no submit handler attached.");
 }
