@@ -2,18 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MarketMatch – Firebase Test</title>
+  <title>MarketMatch – Consultation</title>
 </head>
 <body>
-  <h1>MarketMatch – Firebase Test</h1>
-  <p>Click the button to create a test consultation in Firestore.</p>
+  <h1>MarketMatch – New Consultation</h1>
+  <p>Fill in a few details and save your consultation to Firestore.</p>
 
-  <button id="test-button">Create Test Consultation</button>
+  <form id="consultation-form">
+    <label>
+      Budget to start ($):
+      <input type="number" id="budget" required />
+    </label>
+    <br /><br />
+
+    <label>
+      Skills (comma separated):
+      <input type="text" id="skills" placeholder="e.g. design, marketing, repair" />
+    </label>
+    <br /><br />
+
+    <label>
+      Interests (comma separated):
+      <input type="text" id="interests" placeholder="e.g. pets, sports, tech" />
+    </label>
+    <br /><br />
+
+    <button type="submit">Save Consultation</button>
+  </form>
 
   <h2>Debug Log</h2>
   <pre id="log" style="border:1px solid #ccc; padding:10px; max-width:600px; white-space:pre-wrap;"></pre>
 
-  <!-- This actually loads app.js in the page -->
+  <!-- Load our JavaScript file -->
   <script type="module" src="./app.js"></script>
 </body>
 </html>
