@@ -1,6 +1,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// 🔹 0. Helper: log to page AND console
+function log(msg) {
+  console.log(msg);
+  const el = document.getElementById("log");
+  if (el) {
+    el.textContent += msg + "\n";
+  }
+}
+
 // 🔹 1. YOUR firebaseConfig from Firebase console:
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY_HERE",
@@ -12,33 +21,42 @@ const firebaseConfig = {
 };
 
 // 🔹 2. Initialize Firebase + Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+let app, db;
+try {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  log("Firebase initialized OK");
+} catch (e) {
+  log("Error initializing Firebase: " + e.message);
+}
 
-console.log("Firebase initialized");
-
-// 🔹 3. Grab the button and log it
+// 🔹 3. Grab the button
 const btn = document.getElementById("test-button");
-console.log("Button element:", btn);
+log("Button element: " + (btn ? "FOUND" : "NOT FOUND"));
 
 if (!btn) {
   alert("Could not find the button with id 'test-button'. Check index.html.");
 }
 
-// 🔹 4. Only add listener if button exists
-btn?.addEventListener("click", async () => {
-  console.log("Button clicked – attempting to write to Firestore...");
-  try {
-    const docRef = await addDoc(collection(db, "consultations"), {
+// 🔹 4. Click handler with detailed logging
+if (btn && db) {
+  btn.addEventListener("click", () => {
+    log("Button clicked – starting addDoc...");
+
+    addDoc(collection(db, "consultations"), {
       createdAt: new Date(),
       test: true,
       note: "Hello from GitHub + Firebase!"
-    });
-
-    alert("Created test consultation with ID: " + docRef.id);
-    console.log("Document written with ID:", docRef.id);
-  } catch (error) {
-    console.error("Error adding document:", error);
-    alert("Error adding document. Check console for details.");
-  }
-});
+    })
+      .then((docRef) => {
+        log("SUCCESS: Document written with ID: " + docRef.id);
+        alert("Created test consultation with ID: " + docRef.id);
+      })
+      .catch((error) => {
+        log("ERROR adding document: " + error.message);
+        alert("ERROR writing to Firestore: " + error.message);
+      });
+  });
+} else {
+  log("Either btn or db is missing, no click handler attached.");
+}
