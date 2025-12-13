@@ -8,7 +8,7 @@ function log(msg) {
   if (el) el.textContent += msg + "\n";
 }
 
-// 🔹 1. YOUR firebaseConfig (use the SAME one that is already working)
+// 🔹 Your Firebase config (same one that already works)
 const firebaseConfig = {
   apiKey: "AIzaSyB1-RcRXGpeJVTWNj21mFnggYy1s_h4gE0",
   authDomain: "marketmatch-app.firebaseapp.com",
@@ -19,7 +19,7 @@ const firebaseConfig = {
   measurementId: "G-2RZPS8QLLM"
 };
 
-// 🔹 2. Initialize Firebase + Firestore
+// 🔹 Initialize Firebase + Firestore
 let app, db;
 try {
   app = initializeApp(firebaseConfig);
@@ -29,41 +29,118 @@ try {
   log("Error initializing Firebase: " + e.message);
 }
 
-// 🔹 3. Grab the form + inputs
+// Grab form
 const form = document.getElementById("consultation-form");
-const budgetInput = document.getElementById("budget");
-const skillsInput = document.getElementById("skills");
-const interestsInput = document.getElementById("interests");
-
 if (!form) {
   log("Consultation form NOT FOUND");
 } else {
   log("Consultation form FOUND");
 }
 
-// 🔹 4. Handle form submit
+// Helper to read checked checkboxes into array
+function getCheckedValues(name) {
+  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+    .map(cb => cb.value);
+}
+
+// 🔹 Handle submit
 if (form && db) {
   form.addEventListener("submit", async (event) => {
-    event.preventDefault(); // stop page reload
-    log("Form submitted – preparing data...");
+    event.preventDefault();
+    log("Form submitted – collecting answers...");
 
-    const budget = Number(budgetInput.value || 0);
-    const skills = (skillsInput.value || "")
-      .split(",")
-      .map(s => s.trim())
-      .filter(Boolean);
-    const interests = (interestsInput.value || "")
-      .split(",")
-      .map(i => i.trim())
-      .filter(Boolean);
+    // SECTION 1: Financial Capacity
+    const budgetTotal = Number(document.getElementById("budgetTotal").value || 0);
+    const monthlyBudget = Number(document.getElementById("monthlyBudget").value || 0);
+    const riskTolerance = document.getElementById("riskTolerance").value;
+    const timeHorizon = document.getElementById("timeHorizon").value;
+
+    // SECTION 2: Skills
+    const skillCategories = getCheckedValues("skillCat");
+    const specialSkills = document.getElementById("specialSkills").value.trim();
+    const likesHandsOn = document.getElementById("likesHandsOn").value;
+    const newToolsComfort = document.getElementById("newToolsComfort").value;
+
+    // SECTION 3: Interests & Markets
+    const industries = getCheckedValues("industry");
+    const productVsService = document.getElementById("productVsService").value;
+    const physicalVsDigital = document.getElementById("physicalVsDigital").value;
+    const b2cVsB2b = document.getElementById("b2cVsB2b").value;
+
+    // SECTION 4: Personality & Work Style
+    const workStyle = document.getElementById("workStyle").value;
+    const socialLevel = document.getElementById("socialLevel").value;
+    const indoorOutdoor = document.getElementById("indoorOutdoor").value;
+    const customerComfort = document.getElementById("customerComfort").value;
+    const workType = document.getElementById("workType").value;
+    const weeklyHours = Number(document.getElementById("weeklyHours").value || 0);
+
+    // SECTION 5: Environment & Logistics
+    const hasSpace = document.getElementById("hasSpace").value;
+    const hasVehicle = document.getElementById("hasVehicle").value;
+    const workFromHome = document.getElementById("workFromHome").value;
+    const onlineOffline = document.getElementById("onlineOffline").value;
+
+    // SECTION 6: Experience
+    const businessExperience = document.getElementById("businessExperience").value;
+    const importExperience = document.getElementById("importExperience").value;
+    const marketingExperience = document.getElementById("marketingExperience").value;
+    const customerService = document.getElementById("customerService").value;
+
+    // SECTION 7: Motivation & Goals
+    const mainGoal = document.getElementById("mainGoal").value;
+    const launchTimeline = document.getElementById("launchTimeline").value;
+    const mainMotivation = document.getElementById("mainMotivation").value;
+    const mainConstraint = document.getElementById("mainConstraint").value;
 
     const consultationData = {
       createdAt: new Date(),
       status: "questions_completed",
+      questionnaireVersion: 1,
       answers: {
-        budget,
-        skills,
-        interests
+        // Financial
+        budgetTotal,
+        monthlyBudget,
+        riskTolerance,
+        timeHorizon,
+
+        // Skills
+        skillCategories,
+        specialSkills,
+        likesHandsOn,
+        newToolsComfort,
+
+        // Interests & markets
+        industries,
+        productVsService,
+        physicalVsDigital,
+        b2cVsB2b,
+
+        // Personality & work style
+        workStyle,
+        socialLevel,
+        indoorOutdoor,
+        customerComfort,
+        workType,
+        weeklyHours,
+
+        // Environment & logistics
+        hasSpace,
+        hasVehicle,
+        workFromHome,
+        onlineOffline,
+
+        // Experience
+        businessExperience,
+        importExperience,
+        marketingExperience,
+        customerService,
+
+        // Motivation & goals
+        mainGoal,
+        launchTimeline,
+        mainMotivation,
+        mainConstraint
       }
     };
 
@@ -72,8 +149,6 @@ if (form && db) {
       const docRef = await addDoc(collection(db, "consultations"), consultationData);
       log("SUCCESS: Consultation saved with ID: " + docRef.id);
       alert("Consultation saved! ID: " + docRef.id);
-
-      // Optional: clear form
       form.reset();
     } catch (error) {
       log("ERROR saving consultation: " + error.message);
