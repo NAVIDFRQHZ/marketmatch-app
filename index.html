@@ -1,39 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>MarketMatch – Consultation</title>
-</head>
-<body>
-  <h1>MarketMatch – New Consultation</h1>
-  <p>Fill in a few details and save your consultation to Firestore.</p>
+<form id="consultation-form">
+  <label>Budget to start ($):
+    <input type="number" id="budget" required />
+  </label><br><br>
 
-  <form id="consultation-form">
-    <label>
-      Budget to start ($):
-      <input type="number" id="budget" required />
-    </label>
-    <br /><br />
+  <label>Main Skills (comma separated):
+    <input type="text" id="skills" placeholder="marketing, design, repair" />
+  </label><br><br>
 
-    <label>
-      Skills (comma separated):
-      <input type="text" id="skills" placeholder="e.g. design, marketing, repair" />
-    </label>
-    <br /><br />
+  <label>Interests (comma separated):
+    <input type="text" id="interests" placeholder="pets, sports, tech" />
+  </label><br><br>
 
-    <label>
-      Interests (comma separated):
-      <input type="text" id="interests" placeholder="e.g. pets, sports, tech" />
-    </label>
-    <br /><br />
+  <label>Education level:
+    <select id="education">
+      <option value="none">No formal degree</option>
+      <option value="high_school">High School</option>
+      <option value="college">College</option>
+      <option value="university">University</option>
+      <option value="certifications">Special Certifications</option>
+    </select>
+  </label><br><br>
 
-    <button type="submit">Save Consultation</button>
-  </form>
+  <label>Preferred business type:
+    <select id="bizType">
+      <option value="products">Products</option>
+      <option value="services">Services</option>
+      <option value="entertainment">Entertainment / Digital</option>
+    </select>
+  </label><br><br>
 
-  <h2>Debug Log</h2>
-  <pre id="log" style="border:1px solid #ccc; padding:10px; max-width:600px; white-space:pre-wrap;"></pre>
+  <label>Time available per week:
+    <input type="number" id="timeAvailable" placeholder="Hours per week" />
+  </label><br><br>
 
-  <!-- Load our JavaScript file -->
-  <script type="module" src="./app.js"></script>
-</body>
-</html>
+  <label>Do you prefer social interaction?
+    <select id="socialPreference">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+  </label><br><br>
+
+  <label>Online / Offline Preference:
+    <select id="onlinePreference">
+      <option value="online">Online only</option>
+      <option value="offline">Offline only</option>
+      <option value="both">Both</option>
+    </select>
+  </label><br><br>
+
+  <label>Experience running a business?
+    <select id="experience">
+      <option value="none">No</option>
+      <option value="basic">Basic</option>
+      <option value="intermediate">Intermediate</option>
+      <option value="advanced">Advanced</option>
+    </select>
+  </label><br><br>
+
+  <button type="submit">Save Consultation</button>
+</form>
